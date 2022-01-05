@@ -3,6 +3,7 @@
 // load modules
 const express = require('express');
 const morgan = require('morgan');
+const routes = require('./routes/routes');
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize({
   dialect: 'sqlite',
@@ -43,6 +44,8 @@ app.get('/', (req, res) => {
     message: 'Welcome to the REST API project!',
   });
 });
+
+app.use('/api', routes);
 
 // send 404 if no other route matched
 app.use((req, res) => {
