@@ -1,7 +1,9 @@
-const { Model } = require('sequelize');
-  module.exports = (sequelize, DataTypes) => {
-    class User extends Model {};
-    User.init({
+const { Model, DataTypes } = require('sequelize');
+const bcrypt = require('bcrypt');
+
+module.exports = (sequelize) => {
+  class User extends Model {}
+  User.init({
         firstName: {
             type: DataTypes.STRING,
             allowNull: false
@@ -20,17 +22,16 @@ const { Model } = require('sequelize');
         },
     }),
     { 
-        sequelize, 
-        modelName: 'User',
+        sequelize
     };
 
     User.associate = (models) => {
-        User.hasMany(models.course),
+        User.hasMany(models.Course),
         {
             as: 'student',
             foreignKey: {
                 fieldName: 'userId',
-                name: models.user.id,
+                name: models.User.id,
                 allowNull: false
             }
         }

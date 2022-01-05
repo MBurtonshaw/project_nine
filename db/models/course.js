@@ -24,12 +24,12 @@ const { Model } = require('sequelize');
     };
 
     Course.associate = (models) => {
-        Course.belongsTo(models.user),
+        Course.belongsTo(models.User),
         {
             as: 'student',
             foreignKey: {
                 fieldName: 'userId',
-                name: models.user.id,
+                name: models.User.id,
                 allowNull: false
             }
         }

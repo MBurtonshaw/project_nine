@@ -1,48 +1,33 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const User = require('../db/models/user');
+const { asyncHandler } = require('../db/middleware/asyncHandler');
 
 let users = [];
 
-router.get('/', (req, res) => {
+router.get('/', asyncHandler( async(req, res) => {
     res.redirect('/users');
-});
+}));
 
-router.get('/users', (req, res) => {
+router.get('/users', asyncHandler( async(req, res) => {
     res.json(users);
-});
+}));
 
-router.post('/users', (req, res) => {
-    const user = req.body;
-
-    //req.body is undefined?
-    const errors = [];
-
-    if (!user.firstName) {
-        errors.push('Please provide a first name');
-    }
-    if (!user.lastName) {
-        errors.push('Please provide a last name');
-    }
-    if (!user.emailAddress) {
-        errors.push('Please provide a valid email address');
-    }
-    let password = user.password;
-    if (!user.password) {
-        errors.push('Please provide a password between 8-20 characters');
-    } else if (password.length < 8 || password.length > 20) {
-        errors.push('Password must be between 8-20 characters');
-    } else {
-        user.password = bcrypt.hashSync(password, 10);
-    }
-
-    if (errors.length > 0) {
-        res.status(401).json({ errors });
-    } else {
+router.post('/users', asyncHandler( async(req, res) => {
+    try {
+        let user = await User.create(req.body);
+        res.status(201).json({'message' : 'account created'});
         users.push(user);
-        res.status(201).end();
-    }
-});
+    } catch (error) {
+        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+          const errors = error.errors.map(err => err.message);
+          res.status(400).json({ errors });   
+        } else {
+          throw error;
+        }
+      }
+}));
 
 
 
