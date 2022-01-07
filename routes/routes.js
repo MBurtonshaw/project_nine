@@ -1,8 +1,9 @@
 const express = require('express');
+const sequelize = require('sequelize');
 const router = express.Router();
-const bcrypt = require('bcrypt');
-const { User } = require('../db/models');
-const { asyncHandler } = require('../db/middleware/asyncHandler');
+
+const { asyncHandler } = require('../middleware/asyncHandler');
+const User = require('../models/user');
 
 let users = [];
 

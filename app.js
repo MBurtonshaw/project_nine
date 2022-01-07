@@ -3,9 +3,12 @@
 // load modules
 const express = require('express');
 const morgan = require('morgan');
+const Sequelize = require('sequelize');
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: 'fsjstd-restapi.db'
+});
 const routes = require('./routes/routes');
-const { sequelize, Sequelize, db} = require('./db');
-const { asyncHandler } = require('./db/middleware/asyncHandler');
 
 // variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
@@ -13,27 +16,26 @@ const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'tr
 // create the Express app
 const app = express();
 
+(async () => {
+    try{
+    //testing db connection & force-syncing
+    await sequelize.authenticate();
+    console.log('Step 1: complete. Connection established.');
+    await sequelize.sync({force: true});
+    console.log('Step 2: complete. Database is synced.');
+  } catch(error) {
+    //catching validation errors & mapping to the console
+    if (error.name === 'SequelizeValidationError') {
+      const errors = error.errors.map(err => err.message);
+      console.error('Validation errors: ', errors);
+    } else {
+      throw error;
+    }
+  }
+})();
+
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
-
-//async function that runs on startup
-(async () => {
-  try{
-  //testing db connection & force-syncing
-  await sequelize.authenticate();
-  console.log('Step 1: complete. Connection established.');
-  await sequelize.sync({force: true});
-  console.log('Step 2: complete. Database is synced.');
-} catch(error) {
-  //catching validation errors & mapping to the console
-  if (error.name === 'SequelizeValidationError') {
-    const errors = error.errors.map(err => err.message);
-    console.error('Validation errors: ', errors);
-  } else {
-    throw error;
-  }
-}
-})();
 
 // setup a friendly greeting for the root route
 app.get('/', (req, res) => {
