@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const User = require('../db/models/user');
+const { User } = require('../db/models');
 const { asyncHandler } = require('../db/middleware/asyncHandler');
 
 let users = [];
