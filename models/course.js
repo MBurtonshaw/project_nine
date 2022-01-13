@@ -17,13 +17,13 @@ const { Model } = require('sequelize');
         materialsNeeded: {
             type: DataTypes.STRING
         },
-    }),
+    },
     { 
         sequelize, 
         modelName: 'Course',
-    };
+    });
 
-    Course.associate = (models) => {
+   /* Course.associate = (models) => {
         Course.belongsTo(models.User),
         {
             as: 'student',
@@ -33,7 +33,7 @@ const { Model } = require('sequelize');
                 allowNull: false
             }
         }
-    };
+    };*/
 
     return Course;
 };

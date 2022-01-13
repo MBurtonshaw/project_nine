@@ -4,26 +4,22 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {}
   User.init({
         firstName: {
-            type: DataTypes.STRING,
-            allowNull: false
+            type: DataTypes.STRING
         },
         lastName: {
-            type: DataTypes.STRING,
-            allowNull: false
+            type: DataTypes.STRING
         },
         emailAddress: {
-            type: DataTypes.STRING,
-            allowNull: false
+            type: DataTypes.STRING
         },
         password: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-    }),
+            type: DataTypes.STRING
+        }
+    },
     { 
         sequelize,
         modelName : 'User'
-    };
+    });
 
     /*User.associate = (models) => {
         User.hasMany(models.Course),
