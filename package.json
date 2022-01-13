@@ -11,9 +11,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^1.18.3"
+    "nodemon": "^2.0.15"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "cross-env": "^7.0.2",
     "express": "^4.17.1",
@@ -22,6 +23,6 @@
     "sequelize": "^6.12.5",
     "sequelize-cli": "^6.3.0",
     "sqlite": "^4.0.23",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "^4.2.0"
   }
 }

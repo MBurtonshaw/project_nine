@@ -3,7 +3,7 @@ const sequelize = require('sequelize');
 const router = express.Router();
 
 const { asyncHandler } = require('../middleware/asyncHandler');
-const { User } = require('../models');
+const { User, Course } = require('../models');
 
 let users_array = [];
 
@@ -30,14 +30,23 @@ router.post('/users', asyncHandler( async(req, res) => {
       }
 }));
 
-router.get('/test', asyncHandler( async(req, res) => {
-    res.send(users_array);
+router.get('/courses', asyncHandler(async(req, res) => {
+    let courses = await Course.findAll();
+    res.json(courses);
 }));
 
-router.post('/test', asyncHandler( async(req, res) => {
-    let testers = req.body;
-    users_array.push(testers);
-    res.end();
+router.post('/courses', asyncHandler(async(req, res) => {
+    try {
+        await Course.create(req.body);
+        res.status(201).json({ 'message' : 'course created' });
+    } catch (error) {
+        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+          const errors = error.errors.map(err => err.message);
+          res.status(400).json({ errors });   
+        } else {
+          throw error;
+        }
+      }
 }));
 
 
