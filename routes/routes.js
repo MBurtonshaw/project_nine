@@ -30,15 +30,15 @@ router.post('/users', asyncHandler( async(req, res) => {
       }
 }));
 
-router.get('/test', (req, res) => {
+router.get('/test', asyncHandler( async(req, res) => {
     res.send(users_array);
-});
+}));
 
-router.post('/test', (req, res) => {
+router.post('/test', asyncHandler( async(req, res) => {
     let testers = req.body;
     users_array.push(testers);
     res.end();
-});
+}));
 
 
 
