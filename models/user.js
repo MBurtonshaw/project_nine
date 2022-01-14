@@ -63,8 +63,7 @@ module.exports = (sequelize, DataTypes) => {
                     msg: 'Please provide a password'
                 }
             }
-        }
-        /*
+        }, /*
         confirmedPassword: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -79,15 +78,18 @@ module.exports = (sequelize, DataTypes) => {
                     msg: 'Both passwords must match'
                 }
             }
-        }*/
-    },
+        } */
+},
     { 
         sequelize,
         modelName : 'User'
     });
 
     User.associate = (models) => {
-        User.hasMany(models.Course)
+        User.hasMany(models.Course, {
+            as: 'userId',
+            allowNull: false
+        })
       };
 
     return User;

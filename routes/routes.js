@@ -13,7 +13,7 @@ router.get('/', asyncHandler( async(req, res) => {
 
 router.get('/users', asyncHandler( async(req, res) => {
     let users = await User.findAll();
-    res.json(users);
+    res.status(200).json(users);
 }));
 
 router.post('/users', asyncHandler( async(req, res) => {
@@ -32,7 +32,12 @@ router.post('/users', asyncHandler( async(req, res) => {
 
 router.get('/courses', asyncHandler(async(req, res) => {
     let courses = await Course.findAll();
-    res.json(courses);
+    res.status(200).json(courses);
+}));
+
+router.get('/courses/:id', asyncHandler( async( req, res) => {
+    let course = await Course.findByPk(req.params.id);
+    res.status(200).json(course);
 }));
 
 router.post('/courses', asyncHandler(async(req, res) => {

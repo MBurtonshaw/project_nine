@@ -28,27 +28,10 @@ const { Model } = require('sequelize');
             }
         },
         estimatedTime: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notNull: {
-                    msg: 'Please provide estimated time'
-                },
-                notEmpty: {
-                    msg: 'Please provide estimated time'}
-            }
+            type: DataTypes.STRING
         },
         materialsNeeded: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notNull: {
-                    msg: 'Please provide required materials'
-                },
-                notEmpty: {
-                    msg: 'Please provide required materials'
-                }
-            }
+            type: DataTypes.STRING
         },
     },
     { 
