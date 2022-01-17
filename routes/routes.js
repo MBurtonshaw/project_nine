@@ -2,6 +2,7 @@ const express = require('express');
 const sequelize = require('sequelize');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const { authenticateUser } = require('../middleware/auth-user');
 
 const { asyncHandler } = require('../middleware/asyncHandler');
 const { User, Course } = require('../models');
@@ -10,7 +11,8 @@ router.get('/', asyncHandler( async(req, res) => {
     res.redirect('/api/users');
 }));
 
-router.get('/users', asyncHandler( async(req, res) => {
+router.get('/users', authenticateUser, asyncHandler( async(req, res) => {
+    const user = req.currentUser;
     let users = await User.findAll();
     res.status(200).json(users);
 }));
@@ -83,7 +85,8 @@ router.put( '/courses/:id', asyncHandler( async(req, res) => {
 
 }));
 
-router.delete( '/courses/:id', asyncHandler( async(req, res) => {
+router.delete( '/courses/:id', authenticateUser, asyncHandler( async(req, res) => {
+  const user = req.currentUser;
   let course = await Course.findByPk(req.params.id);
   if (course) {
     try {
