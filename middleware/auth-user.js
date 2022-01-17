@@ -17,7 +17,7 @@ exports.authenticateUser = async (req, res, next) => {
     // by their username (i.e. the user's "key"
     // from the Authorization header).
     if (credentials) {
-        const user = await User.findOne({ where: { username: credentials.name }});
+        const user = await User.findOne({ where: { emailAddress: credentials.name }});
 
     // If a user was successfully retrieved from the data store...
     // Use the bcrypt npm package to compare the user's password
@@ -31,7 +31,7 @@ exports.authenticateUser = async (req, res, next) => {
     // so any middleware functions that follow this middleware function
     // will have access to the user's information.
             if (authenticated) {
-                console.log('Authentication successful, ' + user.username);
+                console.log('Authentication successful, ' + user.firstName);
                 req.currentUser = user;
                 //currentUser is a property being created right here
                 //and being stored on req

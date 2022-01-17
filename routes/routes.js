@@ -1,18 +1,19 @@
 const express = require('express');
-const sequelize = require('sequelize');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+//
 const { authenticateUser } = require('../middleware/auth-user');
-
 const { asyncHandler } = require('../middleware/asyncHandler');
 const { User, Course } = require('../models');
 
+////////////////////////////////////////////////////////////////////////////////
+//Routing -- Users
+////////////////////////////////////////////////////////////////////////////////
 router.get('/', asyncHandler( async(req, res) => {
-    res.redirect('/api/users');
+    res.redirect('/api/courses');
 }));
 
 router.get('/users', authenticateUser, asyncHandler( async(req, res) => {
-    const user = req.currentUser;
     let users = await User.findAll();
     res.status(200).json(users);
 }));
@@ -24,7 +25,6 @@ router.post('/users', asyncHandler( async(req, res) => {
         await User.create(req.body);
         res.status(201).json({'message' : 'account created'});
       }
-
   } catch (error) {
       if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
         const errors = error.errors.map(err => err.message);
@@ -33,15 +33,18 @@ router.post('/users', asyncHandler( async(req, res) => {
         throw error;
       }
     }
-
 }));
+
+////////////////////////////////////////////////////////////////////////////////
+//Routing -- Courses
+////////////////////////////////////////////////////////////////////////////////
 
 router.get('/courses', asyncHandler(async(req, res) => {
     let courses = await Course.findAll();
     res.status(200).json(courses);
 }));
 
-router.post('/courses', asyncHandler(async(req, res) => {
+router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
   let course = await Course.create(req.body);
     try {
       if (course) {
@@ -65,7 +68,7 @@ router.get('/courses/:id', asyncHandler( async( req, res) => {
   res.status(200).json(course);
 }));
 
-router.put( '/courses/:id', asyncHandler( async(req, res) => {
+router.put( '/courses/:id', authenticateUser, asyncHandler( async(req, res) => {
   let course = await Course.findByPk(req.params.id);
   if (course) {
     try {
@@ -82,11 +85,9 @@ router.put( '/courses/:id', asyncHandler( async(req, res) => {
   } else {
     res.json({message: 'Error; course not found'});
   }
-
 }));
 
 router.delete( '/courses/:id', authenticateUser, asyncHandler( async(req, res) => {
-  const user = req.currentUser;
   let course = await Course.findByPk(req.params.id);
   if (course) {
     try {
@@ -103,10 +104,6 @@ router.delete( '/courses/:id', authenticateUser, asyncHandler( async(req, res) =
   } else {
     res.json({message: 'Error; course not found'});
   }
-
-  
 }));
-
-
 
 module.exports = router;
