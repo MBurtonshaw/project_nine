@@ -17,8 +17,12 @@ router.get('/users', asyncHandler( async(req, res) => {
 
 router.post('/users', asyncHandler( async(req, res) => {
     try {
-      await User.create(req.body);
-      res.status(201).json({'message' : 'account created'});
+      if (req.body.password) {
+        req.body.password = bcrypt.hashSync(req.body.password, 10);
+        await User.create(req.body);
+        res.status(201).json({'message' : 'account created'});
+      }
+
   } catch (error) {
       if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
         const errors = error.errors.map(err => err.message);
@@ -39,7 +43,7 @@ router.post('/courses', asyncHandler(async(req, res) => {
   let course = await Course.create(req.body);
     try {
       if (course) {
-        res.setHeader('Location', '/api/courses/');
+        res.setHeader('Location', '/api/courses/' + course.id);
         res.status(201).json({ 'message' : 'course created' });
       } else {
         res.status(404).json({message: 'Course does not exist'});
