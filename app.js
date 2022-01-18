@@ -29,7 +29,7 @@ const app = express();
       const errors = error.errors.map(err => err.message);
       console.error('Validation errors: ', errors);
     } else {
-      throw error;
+      throw new Error('Database connection unsuccessful');
     }
   }
 })();

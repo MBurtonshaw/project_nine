@@ -1,5 +1,4 @@
 const { Model } = require('sequelize');
-const bcrypt = require('bcrypt');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {}
@@ -66,8 +65,9 @@ module.exports = (sequelize, DataTypes) => {
         }
         },
     { 
-        sequelize,
-        modelName : 'User'
+        timestamps: false,
+        modelName : 'User',
+        sequelize
     });
 
     User.associate = (models) => {

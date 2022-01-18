@@ -19,20 +19,24 @@ router.get('/users', authenticateUser, asyncHandler( async(req, res) => {
 }));
 
 router.post('/users', asyncHandler( async(req, res) => {
-    try {
-      if (req.body.password) {
-        req.body.password = bcrypt.hashSync(req.body.password, 10);
-        await User.create(req.body);
-        res.status(201).json({'message' : 'account created'});
+      try {
+        if (req.body.password) {
+          req.body.password = bcrypt.hashSync(req.body.password, 10);
+          let user = await User.create(req.body);
+          res.setHeader('Location', '/api/users/' + user.id);
+          res.status(201).end();
+        } else {
+          res.status(400).json({message: 'Please provide password'});
+        }
+    } catch (error) {
+        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+          const errors = error.errors.map(err => err.message);
+          res.status(400).json({ errors });   
+        } else {
+          throw error;
+        }
       }
-  } catch (error) {
-      if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
-        const errors = error.errors.map(err => err.message);
-        res.status(400).json({ errors });   
-      } else {
-        throw error;
-      }
-    }
+
 }));
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,9 +53,9 @@ router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
     try {
       if (course) {
         res.setHeader('Location', '/api/courses/' + course.id);
-        res.status(201).json({ 'message' : 'course created' });
+        res.status(201).end();
       } else {
-        res.status(404).json({message: 'Course does not exist'});
+        res.status(404).json({message: 'Please enter course information'});
       }
     } catch (error) {
         if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
@@ -65,7 +69,12 @@ router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
 
 router.get('/courses/:id', asyncHandler( async( req, res) => {
   let course = await Course.findByPk(req.params.id);
-  res.status(200).json(course);
+  let owner = await User.findByPk(course.userId);
+  res.status(200).json({
+    Course_Owner: owner,
+    Title: course.title,
+    Description: course.description
+  });
 }));
 
 router.put( '/courses/:id', authenticateUser, asyncHandler( async(req, res) => {
