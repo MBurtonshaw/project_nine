@@ -2,7 +2,8 @@
 
 const auth = require('basic-auth');
 const bcrypt = require('bcrypt');
-const { User } = require('../models');
+const { User, Course } = require('../models');
+const course = require('../models/course');
 
 exports.authenticateUser = async (req, res, next) => {
   // For future error message purposes

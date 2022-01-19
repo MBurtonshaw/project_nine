@@ -2,6 +2,7 @@ const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {}
+  const format = /^[^@]+@[^@.]+.[a-z]+$/i;
   User.init({
         id: {
             type: DataTypes.INTEGER,
@@ -44,8 +45,8 @@ module.exports = (sequelize, DataTypes) => {
                 },
                 notEmpty: {
                     msg: 'Please provide an email address'
-                }
-            }
+                },
+            },
         },
         password: {
             type: DataTypes.STRING,
@@ -63,9 +64,8 @@ module.exports = (sequelize, DataTypes) => {
                 }
             }
         }
-        },
+    },
     { 
-        timestamps: false,
         modelName : 'User',
         sequelize
     });
@@ -77,6 +77,10 @@ module.exports = (sequelize, DataTypes) => {
             }
         })
       };
+
+
+
+    
 
     return User;
 };

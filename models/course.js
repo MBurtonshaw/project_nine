@@ -3,7 +3,6 @@ const { Model } = require('sequelize');
   module.exports = (sequelize, DataTypes) => {
     class Course extends Model {};
     Course.init({
-        timestamps: false,
         title: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -36,7 +35,6 @@ const { Model } = require('sequelize');
         },
     },
     { 
-        timestamps: false,
         modelName: 'Course',
         sequelize
     });
