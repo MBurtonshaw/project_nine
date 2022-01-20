@@ -31,6 +31,12 @@ router.get('/users/:id', asyncHandler( async(req, res) => {
   res.status(200).json(user);
 }));
 
+router.delete('/users/:id', authenticateUser, asyncHandler( async(req, res) => {
+  let user = await User.findByPk(req.params.id);
+  user.destroy();
+  res.status(204).end();
+}));
+
 router.post('/users', asyncHandler( async(req, res) => {
   const format = /^[^@]+@[^@.]+.[a-z]+$/i;
 
