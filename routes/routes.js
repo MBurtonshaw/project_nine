@@ -32,24 +32,31 @@ router.get('/users/:id', asyncHandler( async(req, res) => {
 }));
 
 router.post('/users', asyncHandler( async(req, res) => {
-      try {
+  const format = /^[^@]+@[^@.]+.[a-z]+$/i;
+
         if (req.body.password) {
-          req.body.password = bcrypt.hashSync(req.body.password, 10);
-          let user = await User.create(req.body);
-          res.setHeader('Location', '/api/users/' + user.id);
-          res.status(201).end();
-        } else {
-          res.status(400).json({message: 'Please provide password'});
-        }
-    } catch (error) {
-        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
-          const errors = error.errors.map(err => err.message);
-          res.status(400).json({ errors });   
-        } else {
-          throw error;
+          try{
+              req.body.password = bcrypt.hashSync(req.body.password, 10);
+              let user = await User.create(req.body);
+
+              if (!req.body.emailAddress.match(format)) {
+                throw error;
+            } else {
+              res.setHeader('Location', '/api/users/' + user.id);
+              res.status(201).end();
+            }
+        
+        } catch (error) {
+            if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+              const errors = error.errors.map(err => err.message);
+              res.status(400).json({ errors });   
+            } else {
+              throw new Error('Please use valid email format');
         }
       }
-
+    } else {
+      throw new Error('Please enter a password');
+    }
 }));
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +80,7 @@ router.get('/courses/:id', asyncHandler( async( req, res) => {
   });
   let owner = await User.findByPk(course.userId);
   res.status(200).json({
-    Course_Owner: owner,
+    Course_Owner: owner.firstName + ' ' + owner.lastName + ', ' + 'id: ' + owner.id,
     Title: course.title,
     Description: course.description
   });
@@ -124,7 +131,7 @@ router.delete( '/courses/:id', authenticateUser, asyncHandler( async(req, res) =
   let course = await Course.findByPk(req.params.id);
   let owner = await User.findByPk(course.userId);
   if (course) {
-    if (owner.id === currentUser.id) {
+    if (owner.id === req.currentUser.id) {
       try {
         await course.destroy();
         res.status(204).end();

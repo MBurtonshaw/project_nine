@@ -20,10 +20,10 @@ const { Model } = require('sequelize');
             allowNull: false,
             validate: {
                 notNull: {
-                    msg: 'Please provide course title'
+                    msg: 'Please provide course description'
                 },
                 notEmpty: {
-                    msg: 'Please provide course title'
+                    msg: 'Please provide course description'
                 }
             }
         },

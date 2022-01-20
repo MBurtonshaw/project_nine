@@ -2,7 +2,6 @@ const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {}
-  const format = /^[^@]+@[^@.]+.[a-z]+$/i;
   User.init({
         id: {
             type: DataTypes.INTEGER,
