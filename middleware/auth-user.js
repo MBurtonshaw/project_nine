@@ -34,6 +34,11 @@ exports.authenticateUser = async (req, res, next) => {
             if (authenticated) {
                 console.log('Authentication successful, ' + user.firstName);
                 req.currentUser = user;
+                res.json({
+                    id: user.id,
+                    name: user.firstName + ' ' + user.lastName,
+                    emailAddress: user.emailAddress
+                });
                 //currentUser is a property being created right here
                 //and being stored on req
 

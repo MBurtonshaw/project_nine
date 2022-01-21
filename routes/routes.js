@@ -46,18 +46,18 @@ router.post('/users', asyncHandler( async(req, res) => {
               let user = await User.create(req.body);
 
               if (!req.body.emailAddress.match(format)) {
-                throw error;
+                throw new Error('Please enter a valid email address');
             } else {
-              res.setHeader('Location', '/api/users/' + user.id);
+              res.setHeader('Location', '/');
               res.status(201).end();
             }
         
         } catch (error) {
             if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
               const errors = error.errors.map(err => err.message);
-              res.status(400).json({ errors });   
+              res.status(403).json({ errors });   
             } else {
-              throw new Error('Please use valid email format');
+              throw error;
         }
       }
     } else {
@@ -71,37 +71,20 @@ router.post('/users', asyncHandler( async(req, res) => {
 
 router.get('/courses', asyncHandler(async(req, res) => {
     let courses = await Course.findAll({
+      include: {model: User},
       attributes: {
         exclude: ['createdAt', 'updatedAt']
-      }
+      },
     });
     res.status(200).json(courses);
 }));
 
-router.get('/courses/:id', asyncHandler( async( req, res) => {
-  let course = await Course.findByPk(req.params.id, {
-    attributes: {
-      exclude: ['createdAt', 'updatedAt']
-    }
-  });
-  let owner = await User.findByPk(course.userId);
-  res.status(200).json({
-    Course_Owner: owner.firstName + ' ' + owner.lastName + ', ' + 'id: ' + owner.id,
-    Title: course.title,
-    Description: course.description
-  });
-}));
-
 router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
-  let course = await Course.create(req.body);
-    try {
-      if (course) {
-        res.setHeader('Location', '/api/courses/' + course.id);
-        res.status(201).end();
-      } else {
-        res.status(404).json({message: 'Please enter course information'});
-      }
-    } catch (error) {
+  if (req.body) {
+      try {
+        await Course.create(req.body);
+        res.status(204).end();
+      } catch(error) {
         if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
           const errors = error.errors.map(err => err.message);
           res.status(400).json({ errors });   
@@ -109,6 +92,21 @@ router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
           throw error;
         }
       }
+  } else {
+      res.status(403).json({message: 'Error: invalid credentials'});
+    } 
+}));
+
+router.get('/courses/:id', asyncHandler( async( req, res) => {
+  let course = await Course.findByPk(req.params.id, {
+    include: {model: User},
+    attributes: {
+      exclude: ['createdAt', 'updatedAt']
+    }
+  });
+  res.status(200).json({
+    course
+  });
 }));
 
 router.put( '/courses/:id', authenticateUser, asyncHandler( async(req, res) => {
