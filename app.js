@@ -24,13 +24,7 @@ const app = express();
     await sequelize.sync({force: true});
     console.log('Step 2: complete. Database is synced.');
   } catch(error) {
-    //catching validation errors & mapping to the console
-    if (error.name === 'SequelizeValidationError') {
-      const errors = error.errors.map(err => err.message);
-      console.error('Validation errors: ', errors);
-    } else {
-      throw new Error(error, 'Database connection unsuccessful');
-    }
+      console.log('Error connecting to database');
   }
 })();
 
