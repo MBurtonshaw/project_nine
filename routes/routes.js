@@ -15,10 +15,15 @@ router.get('/', asyncHandler( async(req, res) => {
 
 router.get('/users', authenticateUser, asyncHandler( async(req, res) => {
   //Taking auth header from authenticateUser and setting to a variable
-    let user = req.currentUser;
+  //Excluding certain attributes from the public
+    let user = await User.findByPk(req.currentUser.id, {
+      attributes: {
+        exclude: ['createdAt', 'updatedAt', 'password']
+      }
+    });
     //Returning User object of current user
-    res.status(200).json({ user });
-}));
+    res.status(200).json({user});
+  }));
 
 router.get('/users/:id', asyncHandler( async(req, res) => {
   //Finding a user based on the id in the url
@@ -44,8 +49,9 @@ router.post('/users', asyncHandler( async(req, res) => {
     if (req.body) {
     try {
       //Create a new User w req.body, encrypt the password, and set its location header
-        await User.create(req.body);
+      //Password encryption is first, before User is created & added to database
         req.body.password = bcrypt.hashSync(req.body.password, 10);
+        await User.create(req.body);
         res.setHeader('Location', '/');
         res.status(201).end();
         
